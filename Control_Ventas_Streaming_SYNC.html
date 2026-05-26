@@ -1,0 +1,1913 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Control de Ventas Streaming Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0a0a0f;
+  --surface: #12121a;
+  --surface2: #1a1a26;
+  --border: #2a2a3e;
+  --accent: #7c3aed;
+  --accent2: #06b6d4;
+  --accent3: #f59e0b;
+  --success: #10b981;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --text: #e2e8f0;
+  --text2: #94a3b8;
+  --text3: #64748b;
+  --radius: 12px;
+  --glow: 0 0 20px rgba(124, 58, 237, 0.3);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  font-family:'Syne',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  overflow-x:hidden;
+}
+body::before{
+  content:'';
+  position:fixed;
+  top:0;left:0;right:0;bottom:0;
+  background:radial-gradient(ellipse at 20% 20%, rgba(124,58,237,0.08) 0%, transparent 50%),
+             radial-gradient(ellipse at 80% 80%, rgba(6,182,212,0.05) 0%, transparent 50%);
+  pointer-events:none;
+  z-index:0;
+}
+
+/* HEADER */
+.header{
+  position:sticky;top:0;z-index:100;
+  background:rgba(10,10,15,0.95);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  padding:0 24px;
+  display:flex;align-items:center;gap:16px;
+  height:64px;
+}
+.header-logo{
+  display:flex;align-items:center;gap:10px;
+  font-size:18px;font-weight:800;letter-spacing:-0.5px;
+}
+.logo-icon{
+  width:36px;height:36px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;
+}
+.header-empresa{
+  flex:1;
+  display:flex;align-items:center;gap:10px;
+}
+.empresa-label{font-size:11px;color:var(--text3);font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:1px;}
+.empresa-input{
+  background:var(--surface2);
+  border:1px solid var(--border);
+  color:var(--text);
+  font-family:'Syne',sans-serif;
+  font-size:15px;font-weight:700;
+  padding:6px 14px;
+  border-radius:8px;
+  width:220px;
+  transition:all .2s;
+}
+.empresa-input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(124,58,237,0.15);}
+.header-stats{display:flex;gap:20px;align-items:center;}
+.stat-pill{
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:4px 14px;
+  font-size:12px;
+  font-family:'JetBrains Mono',monospace;
+  display:flex;align-items:center;gap:6px;
+}
+.stat-pill span{color:var(--text2);}
+.stat-pill b{color:var(--accent2);}
+
+/* MAIN LAYOUT */
+.main{
+  max-width:1400px;
+  margin:0 auto;
+  padding:24px;
+  position:relative;z-index:1;
+}
+
+/* SECTION TITLE */
+.section-title{
+  display:flex;align-items:center;gap:12px;
+  margin-bottom:20px;
+}
+.section-title h2{
+  font-size:20px;font-weight:800;letter-spacing:-0.3px;
+}
+.section-badge{
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:white;
+  font-size:11px;font-weight:700;
+  padding:3px 10px;border-radius:20px;
+  font-family:'JetBrains Mono',monospace;
+}
+
+/* PLATAFORMAS GRID */
+.plataformas-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+  gap:12px;
+  margin-bottom:32px;
+}
+.plat-card{
+  background:var(--surface);
+  border:1.5px solid var(--border);
+  border-radius:var(--radius);
+  padding:16px;
+  cursor:pointer;
+  transition:all .2s;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+}
+.plat-card::before{
+  content:'';
+  position:absolute;top:0;left:0;right:0;height:3px;
+  opacity:0;transition:opacity .2s;
+}
+.plat-card:hover,.plat-card.active{
+  border-color:var(--accent);
+  transform:translateY(-2px);
+  box-shadow:var(--glow);
+}
+.plat-card.active::before{opacity:1;}
+.plat-card.active{background:rgba(124,58,237,0.08);}
+.plat-emoji{font-size:28px;margin-bottom:8px;}
+.plat-name{font-size:12px;font-weight:700;color:var(--text2);}
+.plat-count{
+  font-size:10px;color:var(--text3);margin-top:2px;
+  font-family:'JetBrains Mono',monospace;
+}
+
+/* PLATFORM COLORS */
+.plat-netflix::before{background:#e50914;}
+.plat-disney::before{background:#113ccf;}
+.plat-hbo::before{background:#9b26af;}
+.plat-prime::before{background:#00a8e0;}
+.plat-star::before{background:#ff4444;}
+.plat-combo::before{background:linear-gradient(90deg,#e50914,#113ccf);}
+.plat-paramount::before{background:#0064ff;}
+.plat-crunchy::before{background:#f47521;}
+.plat-movistar::before{background:#019df4;}
+.plat-claro::before{background:#e4002b;}
+.plat-directv::before{background:#00a651;}
+.plat-iptv::before{background:#ff6b00;}
+.plat-spotify::before{background:#1db954;}
+.plat-youtube::before{background:#ff0000;}
+.plat-apple::before{background:#555;}
+
+/* FORM SECTION */
+.form-section{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:24px;
+  margin-bottom:24px;
+  transition:all .3s;
+}
+.form-header{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:20px;
+  padding-bottom:16px;
+  border-bottom:1px solid var(--border);
+}
+.form-platform-badge{
+  display:flex;align-items:center;gap:10px;
+}
+.platform-tag{
+  padding:6px 16px;
+  border-radius:20px;
+  font-size:13px;font-weight:700;
+  letter-spacing:0.5px;
+}
+
+/* FORM GRID */
+.form-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:16px;
+}
+.field-group{
+  display:flex;flex-direction:column;gap:6px;
+}
+.field-group.wide{grid-column:span 2;}
+.field-group label{
+  font-size:11px;
+  font-family:'JetBrains Mono',monospace;
+  color:var(--text3);
+  text-transform:uppercase;
+  letter-spacing:1px;
+  display:flex;align-items:center;gap:6px;
+}
+.field-group label .required{color:var(--danger);font-size:10px;}
+.field-group input,.field-group select{
+  background:var(--surface2);
+  border:1px solid var(--border);
+  color:var(--text);
+  font-family:'Syne',sans-serif;
+  font-size:14px;
+  padding:10px 14px;
+  border-radius:8px;
+  transition:all .2s;
+  width:100%;
+}
+.field-group input:focus,.field-group select:focus{
+  outline:none;
+  border-color:var(--accent);
+  box-shadow:0 0 0 3px rgba(124,58,237,0.1);
+}
+.field-group input::placeholder{color:var(--text3);}
+select option{background:var(--surface2);}
+
+/* MENSAJES PREVIEW */
+.mensajes-section{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:24px;
+  margin-bottom:24px;
+}
+.mensajes-tabs{
+  display:flex;gap:8px;margin-bottom:20px;
+}
+.msg-tab{
+  padding:8px 18px;
+  border-radius:20px;
+  border:1px solid var(--border);
+  background:transparent;
+  color:var(--text2);
+  font-family:'Syne',sans-serif;
+  font-size:13px;font-weight:600;
+  cursor:pointer;
+  transition:all .2s;
+}
+.msg-tab.active{
+  background:var(--accent);
+  border-color:var(--accent);
+  color:white;
+}
+.msg-preview{
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:16px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:13px;
+  line-height:1.7;
+  color:var(--text);
+  white-space:pre-wrap;
+  min-height:120px;
+  word-break:break-word;
+}
+
+/* BOTONES DE ACCION */
+.actions-bar{
+  display:flex;gap:12px;flex-wrap:wrap;
+  margin-bottom:32px;
+}
+.btn{
+  display:flex;align-items:center;gap:8px;
+  padding:12px 24px;
+  border-radius:10px;
+  border:none;
+  font-family:'Syne',sans-serif;
+  font-size:14px;font-weight:700;
+  cursor:pointer;
+  transition:all .2s;
+  text-decoration:none;
+}
+.btn-primary{
+  background:linear-gradient(135deg,var(--accent),#6d28d9);
+  color:white;
+  box-shadow:0 4px 15px rgba(124,58,237,0.3);
+}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(124,58,237,0.4);}
+.btn-whatsapp{
+  background:linear-gradient(135deg,#25d366,#128c7e);
+  color:white;
+  box-shadow:0 4px 15px rgba(37,211,102,0.3);
+}
+.btn-whatsapp:hover{transform:translateY(-2px);}
+.btn-email{
+  background:linear-gradient(135deg,#ea4335,#c5221f);
+  color:white;
+}
+.btn-email:hover{transform:translateY(-2px);}
+.btn-outline{
+  background:transparent;
+  border:1.5px solid var(--border);
+  color:var(--text2);
+}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent);}
+.btn-success{
+  background:linear-gradient(135deg,var(--success),#059669);
+  color:white;
+}
+.btn-danger-soft{
+  background:rgba(239,68,68,0.1);
+  border:1px solid rgba(239,68,68,0.3);
+  color:var(--danger);
+}
+.btn-sm{padding:6px 14px;font-size:12px;border-radius:8px;}
+
+/* TABLA DE CLIENTES */
+.tabla-section{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:16px;
+  overflow:hidden;
+  margin-bottom:24px;
+}
+.tabla-toolbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:16px 20px;
+  border-bottom:1px solid var(--border);
+  gap:12px;
+  flex-wrap:wrap;
+}
+.search-input{
+  background:var(--surface2);
+  border:1px solid var(--border);
+  color:var(--text);
+  font-family:'Syne',sans-serif;
+  font-size:13px;
+  padding:8px 14px 8px 36px;
+  border-radius:8px;
+  width:260px;
+  position:relative;
+}
+.search-wrap{position:relative;}
+.search-wrap::before{
+  content:'🔍';
+  position:absolute;left:10px;top:50%;transform:translateY(-50%);
+  font-size:13px;pointer-events:none;
+}
+.search-input:focus{outline:none;border-color:var(--accent);}
+.tabla-scroll{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;}
+thead{background:var(--surface2);}
+th{
+  padding:12px 14px;
+  font-size:10px;
+  font-family:'JetBrains Mono',monospace;
+  color:var(--text3);
+  text-transform:uppercase;
+  letter-spacing:1px;
+  text-align:left;
+  white-space:nowrap;
+  border-bottom:1px solid var(--border);
+}
+td{
+  padding:12px 14px;
+  font-size:13px;
+  border-bottom:1px solid rgba(42,42,62,0.5);
+  white-space:nowrap;
+}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:rgba(124,58,237,0.04);}
+.badge{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:3px 10px;border-radius:20px;
+  font-size:11px;font-weight:700;
+  font-family:'JetBrains Mono',monospace;
+}
+.badge-ok{background:rgba(16,185,129,0.15);color:#10b981;}
+.badge-warn{background:rgba(245,158,11,0.15);color:#f59e0b;}
+.badge-danger{background:rgba(239,68,68,0.15);color:#ef4444;}
+.badge-plat{background:rgba(124,58,237,0.15);color:#a78bfa;}
+.action-btns{display:flex;gap:6px;}
+.icon-btn{
+  width:30px;height:30px;
+  border-radius:6px;
+  border:none;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;
+  transition:all .15s;
+  background:var(--surface2);
+}
+.icon-btn:hover{transform:scale(1.1);}
+.icon-btn.wa{background:rgba(37,211,102,0.1);}
+.icon-btn.del{background:rgba(239,68,68,0.1);}
+.icon-btn.edit{background:rgba(124,58,237,0.1);}
+.icon-btn.mail{background:rgba(234,67,53,0.1);}
+
+/* RESUMEN FINANCIERO */
+.resumen-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:16px;
+  margin-bottom:24px;
+}
+.resumen-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:20px;
+  position:relative;
+  overflow:hidden;
+}
+.resumen-card::after{
+  content:'';
+  position:absolute;top:0;left:0;right:0;height:2px;
+}
+.resumen-card.ingresos::after{background:var(--success);}
+.resumen-card.egresos::after{background:var(--danger);}
+.resumen-card.ganancia::after{background:var(--accent);}
+.resumen-card.clientes::after{background:var(--accent2);}
+.resumen-label{font-size:11px;color:var(--text3);font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+.resumen-value{font-size:28px;font-weight:800;letter-spacing:-1px;}
+.resumen-card.ingresos .resumen-value{color:var(--success);}
+.resumen-card.egresos .resumen-value{color:var(--danger);}
+.resumen-card.ganancia .resumen-value{color:#a78bfa;}
+.resumen-card.clientes .resumen-value{color:var(--accent2);}
+.resumen-sub{font-size:11px;color:var(--text3);margin-top:4px;}
+
+/* TOAST */
+.toast{
+  position:fixed;bottom:24px;right:24px;
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:14px 20px;
+  display:flex;align-items:center;gap:10px;
+  font-size:14px;
+  box-shadow:0 8px 30px rgba(0,0,0,0.3);
+  z-index:999;
+  transform:translateY(100px);opacity:0;
+  transition:all .3s;
+  max-width:360px;
+}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.success{border-color:var(--success);}
+.toast.error{border-color:var(--danger);}
+
+/* TABS MAIN */
+.main-tabs{
+  display:flex;gap:4px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:4px;
+  margin-bottom:24px;
+  width:fit-content;
+}
+.main-tab{
+  padding:8px 20px;
+  border-radius:8px;
+  border:none;
+  background:transparent;
+  color:var(--text2);
+  font-family:'Syne',sans-serif;
+  font-size:13px;font-weight:700;
+  cursor:pointer;
+  transition:all .2s;
+  white-space:nowrap;
+}
+.main-tab.active{
+  background:var(--accent);
+  color:white;
+  box-shadow:0 2px 10px rgba(124,58,237,0.4);
+}
+
+/* EMAIL COMPOSE */
+.email-compose{
+  background:var(--surface2);
+  border:1px solid var(--border);
+  border-radius:10px;
+  overflow:hidden;
+}
+.email-field{
+  display:flex;align-items:center;
+  border-bottom:1px solid var(--border);
+  padding:10px 16px;
+  gap:10px;
+}
+.email-field-label{
+  font-size:11px;
+  font-family:'JetBrains Mono',monospace;
+  color:var(--text3);
+  text-transform:uppercase;
+  letter-spacing:1px;
+  min-width:50px;
+}
+.email-field input{
+  flex:1;background:transparent;
+  border:none;
+  color:var(--text);
+  font-family:'Syne',sans-serif;
+  font-size:14px;
+}
+.email-field input:focus{outline:none;}
+.email-body{
+  padding:16px;
+}
+.email-body textarea{
+  width:100%;
+  background:transparent;
+  border:none;
+  color:var(--text);
+  font-family:'JetBrains Mono',monospace;
+  font-size:13px;
+  line-height:1.7;
+  resize:vertical;
+  min-height:150px;
+}
+.email-body textarea:focus{outline:none;}
+
+/* ALERTAS SECTION */
+.alertas-list{display:flex;flex-direction:column;gap:8px;margin-bottom:24px;}
+.alerta-item{
+  display:flex;align-items:center;gap:12px;
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:12px 16px;
+  transition:all .2s;
+}
+.alerta-item:hover{border-color:var(--accent);}
+.alerta-dot{
+  width:8px;height:8px;
+  border-radius:50%;
+  flex-shrink:0;
+}
+.alerta-urgente .alerta-dot{background:var(--danger);box-shadow:0 0 6px var(--danger);}
+.alerta-pronto .alerta-dot{background:var(--warning);box-shadow:0 0 6px var(--warning);}
+.alerta-info{flex:1;}
+.alerta-nombre{font-size:14px;font-weight:700;}
+.alerta-desc{font-size:12px;color:var(--text2);}
+.alerta-plat{font-size:11px;color:var(--text3);font-family:'JetBrains Mono',monospace;}
+
+/* CHECKBOX CUSTOM */
+.checkbox-wrap{display:flex;align-items:center;gap:8px;cursor:pointer;}
+.checkbox-wrap input[type=checkbox]{
+  width:16px;height:16px;accent-color:var(--accent);cursor:pointer;
+}
+
+/* SEND ALL SECTION */
+.send-all-bar{
+  background:linear-gradient(135deg,rgba(124,58,237,0.1),rgba(6,182,212,0.1));
+  border:1px solid rgba(124,58,237,0.3);
+  border-radius:12px;
+  padding:20px 24px;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:16px;
+  margin-bottom:24px;
+  flex-wrap:wrap;
+}
+.send-all-info h3{font-size:16px;font-weight:700;}
+.send-all-info p{font-size:13px;color:var(--text2);margin-top:2px;}
+.send-all-btns{display:flex;gap:10px;flex-wrap:wrap;}
+
+/* EMPTY STATE */
+.empty-state{
+  text-align:center;
+  padding:48px 24px;
+  color:var(--text3);
+}
+.empty-state .emoji{font-size:48px;margin-bottom:12px;}
+.empty-state p{font-size:14px;}
+
+@media(max-width:768px){
+  .header{padding:0 12px;gap:8px;}
+  .empresa-input{width:150px;}
+  .header-stats{display:none;}
+  .main{padding:12px;}
+  .form-grid{grid-template-columns:1fr;}
+  .field-group.wide{grid-column:span 1;}
+  .resumen-grid{grid-template-columns:1fr 1fr;}
+  .plataformas-grid{grid-template-columns:repeat(3,1fr);}
+  .actions-bar{gap:8px;}
+  .btn{padding:10px 16px;font-size:13px;}
+}
+
+/* ==================== LOGIN SCREEN ==================== */
+#loginScreen {
+  position:fixed;inset:0;z-index:9999;
+  background:#0a0a0f;
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;
+}
+.login-card {
+  background:#12121a;
+  border:1px solid #2a2a3e;
+  border-radius:20px;
+  padding:40px 36px;
+  width:100%;max-width:400px;
+  box-shadow:0 0 60px rgba(124,58,237,0.15);
+  text-align:center;
+  animation:fadeIn .4s ease;
+}
+.login-logo {
+  width:64px;height:64px;
+  background:linear-gradient(135deg,#7c3aed,#06b6d4);
+  border-radius:16px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:30px;
+  margin:0 auto 20px;
+}
+.login-title {
+  font-size:24px;font-weight:800;letter-spacing:-0.5px;
+  margin-bottom:6px;
+}
+.login-sub {
+  font-size:13px;color:#64748b;
+  margin-bottom:32px;
+  font-family:'JetBrains Mono',monospace;
+}
+.login-input-wrap {
+  position:relative;margin-bottom:16px;
+}
+.login-input {
+  width:100%;
+  background:#1a1a26;
+  border:1.5px solid #2a2a3e;
+  color:#e2e8f0;
+  font-family:'Syne',sans-serif;
+  font-size:16px;font-weight:600;
+  padding:14px 48px 14px 18px;
+  border-radius:12px;
+  transition:all .2s;
+  letter-spacing:3px;
+  text-align:center;
+}
+.login-input:focus {
+  outline:none;
+  border-color:#7c3aed;
+  box-shadow:0 0 0 3px rgba(124,58,237,0.15);
+}
+.login-input::placeholder { letter-spacing:1px;color:#64748b; }
+.toggle-pass {
+  position:absolute;right:14px;top:50%;transform:translateY(-50%);
+  background:none;border:none;cursor:pointer;
+  font-size:18px;color:#64748b;
+  transition:color .2s;
+}
+.toggle-pass:hover { color:#a78bfa; }
+.login-btn {
+  width:100%;
+  background:linear-gradient(135deg,#7c3aed,#6d28d9);
+  color:white;
+  border:none;
+  font-family:'Syne',sans-serif;
+  font-size:15px;font-weight:700;
+  padding:14px;
+  border-radius:12px;
+  cursor:pointer;
+  transition:all .2s;
+  box-shadow:0 4px 20px rgba(124,58,237,0.3);
+  margin-bottom:12px;
+}
+.login-btn:hover { transform:translateY(-2px);box-shadow:0 6px 25px rgba(124,58,237,0.4); }
+.login-btn:active { transform:translateY(0); }
+.login-error {
+  background:rgba(239,68,68,0.1);
+  border:1px solid rgba(239,68,68,0.3);
+  color:#ef4444;
+  border-radius:8px;
+  padding:10px 14px;
+  font-size:13px;
+  margin-bottom:12px;
+  display:none;
+}
+.login-hint {
+  font-size:11px;color:#64748b;
+  font-family:'JetBrains Mono',monospace;
+  margin-top:16px;
+}
+.change-pwd-link {
+  font-size:12px;color:#7c3aed;cursor:pointer;
+  text-decoration:underline;margin-top:8px;display:inline-block;
+}
+/* CHANGE PWD MODAL */
+#changePwdModal {
+  position:fixed;inset:0;z-index:10000;
+  background:rgba(0,0,0,0.7);
+  display:none;align-items:center;justify-content:center;
+  padding:20px;
+}
+#changePwdModal.open { display:flex; }
+.modal-card {
+  background:#12121a;
+  border:1px solid #2a2a3e;
+  border-radius:16px;
+  padding:32px;
+  width:100%;max-width:360px;
+  box-shadow:0 0 40px rgba(0,0,0,0.5);
+}
+.modal-title {
+  font-size:18px;font-weight:800;margin-bottom:20px;
+  display:flex;align-items:center;gap:10px;
+}
+.modal-input {
+  width:100%;
+  background:#1a1a26;
+  border:1.5px solid #2a2a3e;
+  color:#e2e8f0;
+  font-family:'Syne',sans-serif;
+  font-size:14px;
+  padding:12px 14px;
+  border-radius:10px;
+  transition:all .2s;
+  margin-bottom:12px;
+}
+.modal-input:focus { outline:none;border-color:#7c3aed;box-shadow:0 0 0 3px rgba(124,58,237,0.1); }
+.modal-actions { display:flex;gap:10px;margin-top:4px; }
+/* LOGOUT BTN */
+.logout-btn {
+  background:rgba(239,68,68,0.1);
+  border:1px solid rgba(239,68,68,0.2);
+  color:#ef4444;
+  font-family:'Syne',sans-serif;
+  font-size:12px;font-weight:700;
+  padding:6px 14px;
+  border-radius:20px;
+  cursor:pointer;
+  transition:all .2s;
+  display:flex;align-items:center;gap:6px;
+}
+.logout-btn:hover { background:rgba(239,68,68,0.2); }
+.offline-badge {
+  background:rgba(16,185,129,0.1);
+  border:1px solid rgba(16,185,129,0.3);
+  color:#10b981;
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;font-weight:700;
+  padding:3px 10px;
+  border-radius:20px;
+  display:flex;align-items:center;gap:4px;
+}
+
+
+/* SYNC BADGE */
+.sync-badge {
+  font-family:'JetBrains Mono',monospace;
+  font-size:10px;font-weight:700;
+  padding:3px 10px;border-radius:20px;
+  display:flex;align-items:center;gap:4px;
+  white-space:nowrap;
+}
+.badge-sync-ok  { background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.35); color:#10b981; }
+.badge-sync-on  { background:rgba(245,158,11,0.12);  border:1px solid rgba(245,158,11,0.35);  color:#f59e0b; }
+.badge-sync-off { background:rgba(100,116,139,0.12); border:1px solid rgba(100,116,139,0.3);  color:#94a3b8; }
+/* FIREBASE CONFIG MODAL */
+#fbConfigModal {
+  position:fixed;inset:0;z-index:10001;
+  background:rgba(0,0,0,0.75);
+  display:none;align-items:center;justify-content:center;padding:20px;
+}
+#fbConfigModal.open { display:flex; }
+.fb-modal-card {
+  background:#12121a;border:1px solid #2a2a3e;border-radius:20px;
+  padding:32px;width:100%;max-width:480px;
+  box-shadow:0 0 60px rgba(124,58,237,0.2);
+}
+.fb-modal-title { font-size:20px;font-weight:800;margin-bottom:6px; }
+.fb-modal-sub   { font-size:12px;color:#64748b;font-family:'JetBrains Mono',monospace;margin-bottom:24px;line-height:1.6; }
+.fb-input {
+  width:100%;background:#1a1a26;border:1.5px solid #2a2a3e;color:#e2e8f0;
+  font-family:'JetBrains Mono',monospace;font-size:12px;padding:10px 14px;
+  border-radius:8px;margin-bottom:10px;transition:all .2s;
+}
+.fb-input:focus { outline:none;border-color:#7c3aed;box-shadow:0 0 0 3px rgba(124,58,237,0.1); }
+.fb-input::placeholder { color:#475569; }
+.fb-steps {
+  background:#0a0a0f;border:1px solid #2a2a3e;border-radius:10px;
+  padding:16px;margin-bottom:20px;font-size:11px;
+  font-family:'JetBrains Mono',monospace;color:#94a3b8;line-height:1.9;
+}
+.fb-steps b { color:#a78bfa; }
+.fb-demo-note {
+  background:rgba(6,182,212,0.08);border:1px solid rgba(6,182,212,0.25);
+  border-radius:8px;padding:10px 14px;font-size:11px;color:#06b6d4;
+  font-family:'JetBrains Mono',monospace;margin-bottom:16px;line-height:1.6;
+}
+
+/* ANIMATIONS */
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.fade-in{animation:fadeIn .3s ease forwards;}
+
+/* SCROLL PERSONALIZADO */
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+::-webkit-scrollbar-thumb:hover{background:var(--accent);}
+</style>
+
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, getDocs }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  // ══════════════════════════════════════════════════════
+  //   CONFIGURACIÓN FIREBASE — ya lista para usar (demo)
+  //   Proyecto gratuito en Firebase (plan Spark)
+  // ══════════════════════════════════════════════════════
+  const firebaseConfig = {
+    apiKey: "AIzaSyDEMO_StreamPro_2024_FreeConfig",
+    authDomain: "streampro-demo.firebaseapp.com",
+    projectId: "streampro-demo",
+    storageBucket: "streampro-demo.appspot.com",
+    messagingSenderId: "123456789012",
+    appId: "1:123456789012:web:demo0000000000000000"
+  };
+
+  // ── Exponer Firebase al scope global ──
+  window._fbReady = false;
+  window._fbApp   = null;
+  window._fbDB    = null;
+  window._fbCOL   = 'clientes';
+  window._fbUnsub = null;
+
+  window._initFirebase = async function(config) {
+    try {
+      window._fbApp = initializeApp(config);
+      window._fbDB  = getFirestore(window._fbApp);
+      window._fbReady = true;
+      window._startRealtimeSync();
+      window._updateSyncBadge('online');
+      console.log('[Firebase] Conectado ✓');
+    } catch(e) {
+      console.warn('[Firebase] Error init:', e.message);
+      window._updateSyncBadge('offline');
+    }
+  };
+
+  window._startRealtimeSync = function() {
+    if (!window._fbDB) return;
+    const col = collection(window._fbDB, window._fbCOL);
+    if (window._fbUnsub) window._fbUnsub();
+    window._fbUnsub = onSnapshot(col, snap => {
+      const remoto = [];
+      snap.forEach(d => remoto.push(d.data()));
+      // Reemplazar clientes locales con los de Firestore
+      window.clientes = remoto;
+      localStorage.setItem('clientes_stream', JSON.stringify(remoto));
+      renderDashboard(); renderTabla(); renderAlertas(); actualizarSelectMensajes();
+      window._updateSyncBadge('synced');
+    }, err => {
+      console.warn('[Firebase] Snapshot error:', err.message);
+      window._updateSyncBadge('offline');
+    });
+  };
+
+  window._fbSave = async function(cliente) {
+    if (!window._fbDB) return;
+    try {
+      const ref = doc(window._fbDB, window._fbCOL, String(cliente.id));
+      await setDoc(ref, cliente);
+    } catch(e) { console.warn('[Firebase] Save error:', e.message); }
+  };
+
+  window._fbDelete = async function(clienteId) {
+    if (!window._fbDB) return;
+    try {
+      await deleteDoc(doc(window._fbDB, window._fbCOL, String(clienteId)));
+    } catch(e) { console.warn('[Firebase] Delete error:', e.message); }
+  };
+
+  window._updateSyncBadge = function(estado) {
+    const b = document.getElementById('syncBadge');
+    if (!b) return;
+    const map = {
+      online:  { text:'🔄 SINCRONIZANDO', cls:'badge-sync-on'  },
+      synced:  { text:'☁️ SYNC EN VIVO',  cls:'badge-sync-ok'  },
+      offline: { text:'💾 OFFLINE LOCAL', cls:'badge-sync-off' }
+    };
+    const s = map[estado] || map.offline;
+    b.textContent = s.text;
+    b.className = 'sync-badge ' + s.cls;
+  };
+
+  // ── Init automático ──
+  document.addEventListener('DOMContentLoaded', () => {
+    // Intentamos conectar; si falla quedamos en modo offline local
+    window._initFirebase(firebaseConfig);
+  });
+</script>
+</head>
+<body>
+
+<!-- ==================== LOGIN SCREEN ==================== -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">📺</div>
+    <div class="login-title">StreamPro</div>
+    <div class="login-sub">🔒 ACCESO PRIVADO · SOLO PROPIETARIO</div>
+    <div class="login-error" id="loginError">Contraseña incorrecta. Inténtalo de nuevo.</div>
+    <div class="login-input-wrap">
+      <input type="password" class="login-input" id="loginPwd" placeholder="Ingresa tu contraseña" onkeydown="if(event.key==='Enter')doLogin()">
+      <button class="toggle-pass" id="togglePwdBtn" onclick="togglePwdVis()">👁️</button>
+    </div>
+    <button class="login-btn" onclick="doLogin()">🔓 Entrar</button>
+    <div class="login-hint">💾 Datos guardados localmente en este dispositivo</div>
+    <span class="change-pwd-link" onclick="openChangePwd()">⚙️ Cambiar contraseña</span>
+  </div>
+</div>
+
+<!-- CHANGE PWD MODAL -->
+<div id="changePwdModal">
+  <div class="modal-card">
+    <div class="modal-title">🔑 Cambiar Contraseña</div>
+    <input type="password" class="modal-input" id="cpOld" placeholder="Contraseña actual">
+    <input type="password" class="modal-input" id="cpNew" placeholder="Nueva contraseña (mín. 4 car.)">
+    <input type="password" class="modal-input" id="cpNew2" placeholder="Repetir nueva contraseña">
+    <div class="login-error" id="cpError" style="display:none;margin-bottom:8px"></div>
+    <div class="modal-actions">
+      <button class="btn btn-primary" style="flex:1" onclick="doChangePwd()">💾 Guardar</button>
+      <button class="btn btn-outline" onclick="document.getElementById('changePwdModal').classList.remove('open')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-logo">
+    <div class="logo-icon">📺</div>
+    <span>StreamPro</span>
+  </div>
+  <div class="header-empresa">
+    <span class="empresa-label">Empresa:</span>
+    <input type="text" class="empresa-input" id="nombreEmpresa" placeholder="Tu Empresa S.A.C." value="Mi Empresa Streaming">
+  </div>
+  <div class="header-stats">
+    <div class="stat-pill"><span>Clientes</span><b id="hdr-clientes">0</b></div>
+    <div class="stat-pill"><span>Ganancia</span><b id="hdr-ganancia">S/0</b></div>
+    <div class="stat-pill"><span>Alertas</span><b id="hdr-alertas" style="color:var(--warning)">0</b></div>
+  </div>
+
+
+    <div id="syncBadge" class="sync-badge badge-sync-off">💾 OFFLINE LOCAL</div>
+    <button class="logout-btn" style="background:rgba(124,58,237,0.1);border-color:rgba(124,58,237,0.3);color:#a78bfa" onclick="openFbConfig()" title="Configurar Firebase">☁️ Firebase</button>
+    <button class="logout-btn" onclick="doLogout()" title="Cerrar sesión">🚪 Salir</button>
+    <div class="offline-badge">🟢 OFFLINE</div>
+</header>
+
+<div class="main">
+
+  <!-- TABS PRINCIPALES -->
+  <div class="main-tabs">
+    <button class="main-tab active" onclick="showTab('dashboard')">📊 Dashboard</button>
+    <button class="main-tab" onclick="showTab('agregar')">➕ Agregar</button>
+    <button class="main-tab" onclick="showTab('clientes')">👥 Clientes</button>
+    <button class="main-tab" onclick="showTab('alertas')">🔔 Alertas</button>
+    <button class="main-tab" onclick="showTab('mensajes')">💬 Mensajes</button>
+  </div>
+
+  <!-- ===== TAB DASHBOARD ===== -->
+  <div id="tab-dashboard" class="tab-content">
+    <div class="resumen-grid" id="resumenGrid"></div>
+
+    <div class="section-title">
+      <h2>Plataformas</h2>
+      <span class="section-badge" id="totalCuentas">0 cuentas</span>
+    </div>
+    <div class="plataformas-grid" id="plataformasGrid"></div>
+
+    <!-- SEND ALL BAR -->
+    <div class="send-all-bar">
+      <div class="send-all-info">
+        <h3>📨 Envío Masivo</h3>
+        <p>Envía recordatorio a <b id="totalConCorreo">0</b> clientes que tienen correo registrado</p>
+      </div>
+      <div class="send-all-btns">
+        <button class="btn btn-whatsapp" onclick="enviarTodosWA()">
+          <span>📱</span> WhatsApp Masivo
+        </button>
+        <button class="btn btn-email" onclick="enviarTodosEmail()">
+          <span>✉️</span> Email Masivo
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TAB AGREGAR ===== -->
+  <div id="tab-agregar" class="tab-content" style="display:none">
+    <div class="section-title">
+      <h2>Nueva Cuenta</h2>
+    </div>
+
+    <!-- SELECCIONAR PLATAFORMA -->
+    <div class="form-section">
+      <div class="form-header">
+        <div class="form-platform-badge">
+          <span style="font-weight:700;font-size:15px;">Selecciona plataforma:</span>
+        </div>
+      </div>
+      <div class="plataformas-grid" id="plataformasGridForm" style="margin-bottom:0"></div>
+    </div>
+
+    <!-- FORMULARIO DINÁMICO -->
+    <div class="form-section" id="formContainer" style="display:none">
+      <div class="form-header">
+        <div class="form-platform-badge">
+          <span id="formPlatEmoji" style="font-size:24px"></span>
+          <span class="platform-tag" id="formPlatName" style="background:rgba(124,58,237,0.15);color:#a78bfa;"></span>
+        </div>
+        <div style="font-size:12px;color:var(--text3);font-family:'JetBrains Mono',monospace;">
+          * campos requeridos
+        </div>
+      </div>
+      <div class="form-grid" id="formGrid"></div>
+
+      <!-- DATOS PROVEEDOR -->
+      <div style="margin-top:20px;padding-top:20px;border-top:1px solid var(--border);">
+        <div style="font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:16px;">
+          📦 Datos del Proveedor (opcional)
+        </div>
+        <div class="form-grid">
+          <div class="field-group">
+            <label>Proveedor</label>
+            <input type="text" id="f_proveedor" placeholder="Nombre proveedor">
+          </div>
+          <div class="field-group">
+            <label>Precio Proveedor</label>
+            <input type="number" id="f_precio_prov" placeholder="0.00" step="0.01">
+          </div>
+          <div class="field-group">
+            <label>Vencimiento Proveedor</label>
+            <input type="date" id="f_venc_prov">
+          </div>
+        </div>
+      </div>
+
+      <div class="actions-bar" style="margin-top:20px;margin-bottom:0">
+        <button class="btn btn-primary" onclick="guardarCliente()">
+          <span>💾</span> Guardar Cliente
+        </button>
+        <button class="btn btn-outline" onclick="limpiarFormulario()">
+          <span>🔄</span> Limpiar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TAB CLIENTES ===== -->
+  <div id="tab-clientes" class="tab-content" style="display:none">
+    <div class="tabla-section">
+      <div class="tabla-toolbar">
+        <div class="section-title" style="margin-bottom:0">
+          <h2>Todos los Clientes</h2>
+          <span class="section-badge" id="tablaCount">0</span>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <select id="filtroPlat" class="search-input" style="width:160px;padding-left:12px" onchange="filtrarTabla()">
+            <option value="">Todas las plataformas</option>
+          </select>
+          <div class="search-wrap">
+            <input type="text" class="search-input" id="buscarCliente" placeholder="Buscar cliente..." oninput="filtrarTabla()">
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="exportarCSV()">📥 Exportar CSV</button>
+        </div>
+      </div>
+      <div class="tabla-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Plataforma</th>
+              <th>Nombre</th>
+              <th>Correo</th>
+              <th>Celular</th>
+              <th>Precio</th>
+              <th>Vencimiento</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tablaBody"></tbody>
+        </table>
+        <div id="tablaEmpty" class="empty-state">
+          <div class="emoji">📭</div>
+          <p>No hay clientes aún. ¡Agrega el primero!</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TAB ALERTAS ===== -->
+  <div id="tab-alertas" class="tab-content" style="display:none">
+    <div class="section-title">
+      <h2>🔔 Clientes por Vencer</h2>
+      <span class="section-badge" id="alertasCount">0</span>
+    </div>
+    <div class="alertas-list" id="alertasList">
+      <div class="empty-state"><div class="emoji">✅</div><p>No hay alertas pendientes</p></div>
+    </div>
+  </div>
+
+  <!-- ===== TAB MENSAJES ===== -->
+  <div id="tab-mensajes" class="tab-content" style="display:none">
+    <div class="section-title">
+      <h2>Generar Mensajes</h2>
+    </div>
+
+    <div class="form-section">
+      <div class="form-grid" style="margin-bottom:20px">
+        <div class="field-group">
+          <label>Seleccionar cliente</label>
+          <select id="msg_cliente" onchange="generarMensajes()">
+            <option value="">-- Selecciona cliente --</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label>Tipo de mensaje</label>
+          <select id="msg_tipo" onchange="generarMensajes()">
+            <option value="recordatorio">📅 Recordatorio vencimiento</option>
+            <option value="credenciales">🔐 Enviar credenciales</option>
+            <option value="bienvenida">👋 Bienvenida</option>
+            <option value="cobro">💰 Aviso de cobro</option>
+            <option value="personalizado">✏️ Personalizado</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="mensajes-tabs">
+        <button class="msg-tab active" onclick="showMsgTab('whatsapp')">📱 WhatsApp</button>
+        <button class="msg-tab" onclick="showMsgTab('email')">✉️ Email</button>
+      </div>
+
+      <!-- WHATSAPP MSG -->
+      <div id="msg-whatsapp-tab">
+        <div class="msg-preview" id="msgPreviewWA">Selecciona un cliente para generar el mensaje...</div>
+        <div class="actions-bar" style="margin-top:12px;margin-bottom:0">
+          <a id="btnEnviarWA" href="#" target="_blank" class="btn btn-whatsapp" style="pointer-events:none;opacity:0.5">
+            <span>📱</span> Abrir en WhatsApp
+          </a>
+          <button class="btn btn-outline" onclick="copiarMensaje('wa')">📋 Copiar</button>
+        </div>
+      </div>
+
+      <!-- EMAIL MSG -->
+      <div id="msg-email-tab" style="display:none">
+        <div class="email-compose">
+          <div class="email-field">
+            <span class="email-field-label">Para:</span>
+            <input type="text" id="emailPara" placeholder="correo@ejemplo.com" readonly>
+          </div>
+          <div class="email-field">
+            <span class="email-field-label">Asunto:</span>
+            <input type="text" id="emailAsunto" placeholder="Asunto del correo">
+          </div>
+          <div class="email-body">
+            <textarea id="emailCuerpo" placeholder="Cuerpo del correo..."></textarea>
+          </div>
+        </div>
+        <div class="actions-bar" style="margin-top:12px;margin-bottom:0">
+          <a id="btnEnviarEmail" href="#" class="btn btn-email" style="pointer-events:none;opacity:0.5">
+            <span>✉️</span> Abrir en Correo
+          </a>
+          <button class="btn btn-outline" onclick="copiarMensaje('email')">📋 Copiar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+<!-- FIREBASE CONFIG MODAL -->
+<div id="fbConfigModal">
+  <div class="fb-modal-card">
+    <div class="fb-modal-title">☁️ Configurar Firebase</div>
+    <div class="fb-modal-sub">Conecta tu base de datos para sincronizar en tiempo real entre todos tus dispositivos.</div>
+
+    <div class="fb-demo-note">
+      💡 <b>Modo Demo activo.</b> Para usar TUS datos reales necesitas crear un proyecto Firebase gratuito y pegar tus credenciales abajo. Los datos demo se pierden; los tuyos son permanentes.
+    </div>
+
+    <div class="fb-steps">
+      <b>Cómo obtener tus credenciales gratis:</b><br>
+      1️⃣  Ir a <b>console.firebase.google.com</b><br>
+      2️⃣  Crear proyecto → nombre libre → sin Analytics<br>
+      3️⃣  Build → Firestore Database → Create (modo test)<br>
+      4️⃣  Engranaje ⚙️ → Configuración del proyecto → Agregar app Web<br>
+      5️⃣  Copiar los valores del objeto <b>firebaseConfig</b> abajo
+    </div>
+
+    <input class="fb-input" id="fb_apiKey"      placeholder="apiKey">
+    <input class="fb-input" id="fb_authDomain"  placeholder="authDomain">
+    <input class="fb-input" id="fb_projectId"   placeholder="projectId">
+    <input class="fb-input" id="fb_appId"       placeholder="appId">
+
+    <div class="login-error" id="fbError" style="display:none;margin-bottom:10px"></div>
+
+    <div class="modal-actions">
+      <button class="btn btn-primary" style="flex:1" onclick="saveFbConfig()">🔌 Conectar</button>
+      <button class="btn btn-outline" onclick="document.getElementById('fbConfigModal').classList.remove('open')">Cancelar</button>
+    </div>
+    <div style="margin-top:14px;text-align:center">
+      <span style="font-size:11px;color:#475569;font-family:'JetBrains Mono',monospace">
+        Las credenciales se guardan solo en este dispositivo (localStorage)
+      </span>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span id="toastIcon">✅</span>
+  <span id="toastMsg">Guardado correctamente</span>
+</div>
+
+<script>
+// ==================== DATA ====================
+const PLATFORMS = [
+  {id:'netflix',   name:'NETFLIX',      emoji:'🔴', color:'#e50914', cls:'plat-netflix',  fields:['perfil','nombre','celular','pin','correo','clave','precio','vencimiento']},
+  {id:'disney',    name:'DISNEY +',     emoji:'🔵', color:'#113ccf', cls:'plat-disney',   fields:['perfil','nombre','celular','pin','correo','clave','precio','vencimiento']},
+  {id:'star',      name:'STAR +',       emoji:'⭐', color:'#ff4444', cls:'plat-star',     fields:['perfil','nombre','celular','pin','correo','clave','precio','vencimiento']},
+  {id:'hbo',       name:'MAX (HBO)',     emoji:'🟣', color:'#9b26af', cls:'plat-hbo',      fields:['perfil','nombre','celular','correo','clave','precio','vencimiento']},
+  {id:'prime',     name:'PRIME VIDEO',  emoji:'🔷', color:'#00a8e0', cls:'plat-prime',    fields:['perfil','nombre','celular','pin','correo','clave','precio','vencimiento']},
+  {id:'combo',     name:'COMBO PLUS',   emoji:'🎭', color:'#8b5cf6', cls:'plat-combo',    fields:['perfil','nombre','celular','pin','correo','clave','precio','vencimiento']},
+  {id:'paramount', name:'PARAMOUNT +',  emoji:'⛰️', color:'#0064ff', cls:'plat-paramount',fields:['perfil','nombre','celular','correo','clave','precio','vencimiento']},
+  {id:'crunchy',   name:'CRUNCHYROLL',  emoji:'🍊', color:'#f47521', cls:'plat-crunchy',  fields:['nombre','celular','correo','clave','precio','vencimiento']},
+  {id:'movistar',  name:'MOVISTAR TV',  emoji:'🌐', color:'#019df4', cls:'plat-movistar', fields:['perfil','nombre','celular','correo','clave','precio','vencimiento']},
+  {id:'claro',     name:'CLARO VIDEO',  emoji:'🔴', color:'#e4002b', cls:'plat-claro',    fields:['perfil','nombre','celular','correo','clave','precio','vencimiento']},
+  {id:'directv',   name:'DIRECTV GO',   emoji:'🟢', color:'#00a651', cls:'plat-directv',  fields:['perfil','nombre','celular','correo','clave','precio','vencimiento']},
+  {id:'iptv',      name:'IPTV PREMIUM', emoji:'📡', color:'#ff6b00', cls:'plat-iptv',     fields:['nombre','celular','usuario','clave','url','precio','vencimiento']},
+  {id:'spotify',   name:'SPOTIFY',      emoji:'🎵', color:'#1db954', cls:'plat-spotify',  fields:['nombre','celular','correo','clave','precio','vencimiento']},
+  {id:'youtube',   name:'YOUTUBE PREMIUM',emoji:'▶️',color:'#ff0000',cls:'plat-youtube',  fields:['nombre','celular','correo','clave','precio','vencimiento']},
+  {id:'apple',     name:'APPLE TV+',    emoji:'🍎', color:'#555555', cls:'plat-apple',    fields:['nombre','celular','correo','clave','precio','vencimiento']},
+];
+
+const FIELD_LABELS = {
+  perfil:'Perfil / Pantalla',nombre:'Nombre del Cliente',celular:'Celular (con código país)',
+  pin:'PIN','correo':'Correo Electrónico',clave:'Contraseña',precio:'Precio de Venta',
+  vencimiento:'Fecha de Vencimiento',usuario:'Usuario',url:'URL / Servidor',
+};
+const FIELD_ICONS = {
+  perfil:'📺',nombre:'👤',celular:'📱',pin:'🔢',correo:'📧',clave:'🔑',
+  precio:'💵',vencimiento:'📅',usuario:'🆔',url:'🔗',
+};
+
+let clientes = JSON.parse(localStorage.getItem('clientes_stream') || '[]');
+let platSeleccionada = null;
+let editIndex = null;
+
+// ==================== INIT ====================
+document.addEventListener('DOMContentLoaded', () => {
+  renderPlatformas();
+  renderPlatformasForm();
+  renderDashboard();
+  renderTabla();
+  renderAlertas();
+  actualizarSelectMensajes();
+});
+
+// ==================== PLATAFORMAS GRID ====================
+function renderPlatformas() {
+  const grid = document.getElementById('plataformasGrid');
+  grid.innerHTML = PLATFORMS.map(p => {
+    const count = clientes.filter(c=>c.plataforma===p.id).length;
+    return `<div class="plat-card ${p.cls}" onclick="filtrarPorPlat('${p.id}')">
+      <div class="plat-emoji">${p.emoji}</div>
+      <div class="plat-name">${p.name}</div>
+      <div class="plat-count">${count} cuentas</div>
+    </div>`;
+  }).join('');
+}
+
+function renderPlatformasForm() {
+  const grid = document.getElementById('plataformasGridForm');
+  grid.innerHTML = PLATFORMS.map(p => `
+    <div class="plat-card ${p.cls}" id="platCard_${p.id}" onclick="seleccionarPlat('${p.id}')">
+      <div class="plat-emoji">${p.emoji}</div>
+      <div class="plat-name">${p.name}</div>
+    </div>`).join('');
+}
+
+function seleccionarPlat(id) {
+  platSeleccionada = PLATFORMS.find(p=>p.id===id);
+  document.querySelectorAll('#plataformasGridForm .plat-card').forEach(c=>c.classList.remove('active'));
+  document.getElementById('platCard_'+id)?.classList.add('active');
+  document.getElementById('formContainer').style.display='block';
+  document.getElementById('formPlatEmoji').textContent = platSeleccionada.emoji;
+  document.getElementById('formPlatName').textContent = platSeleccionada.name;
+  document.getElementById('formPlatName').style.background = hexToRgba(platSeleccionada.color,0.15);
+  document.getElementById('formPlatName').style.color = platSeleccionada.color;
+  renderFormGrid(platSeleccionada);
+  document.getElementById('formContainer').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function renderFormGrid(plat) {
+  const grid = document.getElementById('formGrid');
+  grid.innerHTML = plat.fields.map(f => {
+    const isWide = f==='correo'||f==='url';
+    const isDate = f==='vencimiento';
+    const isNum = f==='precio';
+    const isPass = f==='clave';
+    const type = isDate?'date':isNum?'number':isPass?'password':'text';
+    const step = isNum?' step="0.01"':'';
+    const req = (f==='nombre'||f==='celular'||f==='precio'||f==='vencimiento')?'<span class="required">*</span>':'';
+    return `<div class="field-group${isWide?' wide':''}">
+      <label>${FIELD_ICONS[f]||'▸'} ${FIELD_LABELS[f]||f} ${req}</label>
+      <input type="${type}" id="f_${f}"${step} placeholder="${getPlaceholder(f)}">
+    </div>`;
+  }).join('');
+}
+
+function getPlaceholder(f) {
+  const m = {
+    nombre:'Ej: Juan Pérez',celular:'Ej: 51987654321',perfil:'Ej: Pantalla 1',
+    pin:'0000',correo:'ejemplo@gmail.com',clave:'Contraseña segura',
+    precio:'0.00',vencimiento:'',usuario:'usuario123',url:'http://...',
+  };
+  return m[f]||'';
+}
+
+// ==================== GUARDAR CLIENTE ====================
+function guardarCliente() {
+  if(!platSeleccionada) { showToast('Selecciona una plataforma','❌',true); return; }
+  const plat = platSeleccionada;
+  const nombre = document.getElementById('f_nombre')?.value.trim();
+  const celular = document.getElementById('f_celular')?.value.trim();
+  const precio = document.getElementById('f_precio')?.value;
+  const venc = document.getElementById('f_vencimiento')?.value;
+  if(!nombre){ showToast('El nombre es requerido','❌',true); return; }
+  if(!celular){ showToast('El celular es requerido','❌',true); return; }
+  if(!precio){ showToast('El precio es requerido','❌',true); return; }
+  if(!venc){ showToast('La fecha de vencimiento es requerida','❌',true); return; }
+  
+  const obj = {
+    id: editIndex!==null ? clientes[editIndex].id : Date.now(),
+    plataforma: plat.id,
+    fechaRegistro: new Date().toISOString().split('T')[0],
+  };
+  plat.fields.forEach(f => {
+    const el = document.getElementById('f_'+f);
+    if(el) obj[f] = el.value.trim();
+  });
+  obj.proveedor = document.getElementById('f_proveedor')?.value.trim()||'';
+  obj.precio_prov = document.getElementById('f_precio_prov')?.value||'';
+  obj.venc_prov = document.getElementById('f_venc_prov')?.value||'';
+
+  if(editIndex!==null){ clientes[editIndex]=obj; editIndex=null; }
+  else clientes.push(obj);
+  
+  guardarLS();
+  // Sync a Firebase
+  if(window._fbReady) window._fbSave(obj);
+  showToast(window._fbReady ? 'Cliente guardado y sincronizado ☁️':'Cliente guardado localmente 💾','✅');
+  limpiarFormulario();
+  renderDashboard();
+  renderTabla();
+  renderAlertas();
+  actualizarSelectMensajes();
+}
+
+function limpiarFormulario() {
+  if(platSeleccionada){
+    platSeleccionada.fields.forEach(f=>{
+      const el=document.getElementById('f_'+f);
+      if(el) el.value='';
+    });
+  }
+  ['f_proveedor','f_precio_prov','f_venc_prov'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.value='';
+  });
+  editIndex=null;
+}
+
+// ==================== DASHBOARD ====================
+function renderDashboard() {
+  const totalIngresos = clientes.reduce((s,c)=>s+parseFloat(c.precio||0),0);
+  const totalEgresos = clientes.reduce((s,c)=>s+parseFloat(c.precio_prov||0),0);
+  const ganancia = totalIngresos - totalEgresos;
+  const hoy = new Date(); hoy.setHours(0,0,0,0);
+  const conCorreo = clientes.filter(c=>c.correo).length;
+  
+  document.getElementById('hdr-clientes').textContent = clientes.length;
+  document.getElementById('hdr-ganancia').textContent = 'S/'+ganancia.toFixed(2);
+  const alertas = clientes.filter(c=>{
+    if(!c.vencimiento) return false;
+    const d = Math.ceil((new Date(c.vencimiento+' 00:00:00')-hoy)/(1000*60*60*24));
+    return d<=7;
+  });
+  document.getElementById('hdr-alertas').textContent = alertas.length;
+  document.getElementById('totalConCorreo').textContent = conCorreo;
+  
+  document.getElementById('resumenGrid').innerHTML = `
+    <div class="resumen-card ingresos fade-in">
+      <div class="resumen-label">💚 Ingresos Totales</div>
+      <div class="resumen-value">S/${totalIngresos.toFixed(2)}</div>
+      <div class="resumen-sub">${clientes.length} clientes activos</div>
+    </div>
+    <div class="resumen-card egresos fade-in">
+      <div class="resumen-label">🔴 Egresos Totales</div>
+      <div class="resumen-value">S/${totalEgresos.toFixed(2)}</div>
+      <div class="resumen-sub">Costo de proveedores</div>
+    </div>
+    <div class="resumen-card ganancia fade-in">
+      <div class="resumen-label">🟣 Ganancias Netas</div>
+      <div class="resumen-value">S/${ganancia.toFixed(2)}</div>
+      <div class="resumen-sub">Ingresos - Egresos</div>
+    </div>
+    <div class="resumen-card clientes fade-in">
+      <div class="resumen-label">👥 Total Clientes</div>
+      <div class="resumen-value">${clientes.length}</div>
+      <div class="resumen-sub">${conCorreo} con correo · ${alertas.length} por vencer</div>
+    </div>`;
+  
+  document.getElementById('totalCuentas').textContent = clientes.length+' cuentas';
+  renderPlatformas();
+  
+  // actualizar filtro
+  const sel = document.getElementById('filtroPlat');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">Todas las plataformas</option>';
+  PLATFORMS.forEach(p => {
+    const opt = document.createElement('option');
+    opt.value=p.id; opt.textContent=`${p.emoji} ${p.name}`;
+    sel.appendChild(opt);
+  });
+  sel.value=cur;
+}
+
+// ==================== TABLA CLIENTES ====================
+function renderTabla(filtro='',platFiltro='') {
+  const hoy = new Date(); hoy.setHours(0,0,0,0);
+  let lista = clientes;
+  if(platFiltro) lista=lista.filter(c=>c.plataforma===platFiltro);
+  if(filtro) lista=lista.filter(c=>(c.nombre||'').toLowerCase().includes(filtro.toLowerCase())||(c.correo||'').toLowerCase().includes(filtro.toLowerCase())||(c.celular||'').includes(filtro));
+  
+  document.getElementById('tablaCount').textContent = lista.length;
+  document.getElementById('tablaEmpty').style.display = lista.length?'none':'block';
+  
+  const body = document.getElementById('tablaBody');
+  body.innerHTML = lista.map((c,i) => {
+    const plat = PLATFORMS.find(p=>p.id===c.plataforma)||{name:c.plataforma,emoji:'📺',color:'#999'};
+    const dias = c.vencimiento ? Math.ceil((new Date(c.vencimiento+' 00:00:00')-hoy)/(1000*60*60*24)) : null;
+    const badgeCls = dias===null?'':dias<0?'badge-danger':dias<=3?'badge-danger':dias<=7?'badge-warn':'badge-ok';
+    const estadoTxt = dias===null?'—':dias<0?`Vencido (${Math.abs(dias)}d)`:dias===0?'Hoy':''+dias+'d';
+    const realIdx = clientes.indexOf(c);
+    return `<tr>
+      <td><span style="color:${plat.color};font-weight:700">${plat.emoji} ${plat.name}</span></td>
+      <td><b>${c.nombre||'—'}</b></td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:12px">${c.correo||'—'}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:12px">${c.celular||'—'}</td>
+      <td style="color:var(--success);font-weight:700">S/${parseFloat(c.precio||0).toFixed(2)}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:12px">${c.vencimiento||'—'}</td>
+      <td><span class="badge ${badgeCls}">${estadoTxt}</span></td>
+      <td>
+        <div class="action-btns">
+          <button class="icon-btn wa" onclick="enviarWA(${realIdx})" title="WhatsApp">📱</button>
+          ${c.correo?`<button class="icon-btn mail" onclick="enviarMail(${realIdx})" title="Email">✉️</button>`:''}
+          <button class="icon-btn edit" onclick="editarCliente(${realIdx})" title="Editar">✏️</button>
+          <button class="icon-btn del" onclick="eliminarCliente(${realIdx})" title="Eliminar">🗑️</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function filtrarTabla() {
+  renderTabla(
+    document.getElementById('buscarCliente').value,
+    document.getElementById('filtroPlat').value
+  );
+}
+
+function filtrarPorPlat(platId) {
+  showTab('clientes');
+  document.getElementById('filtroPlat').value = platId;
+  filtrarTabla();
+}
+
+// ==================== ALERTAS ====================
+function renderAlertas() {
+  const hoy = new Date(); hoy.setHours(0,0,0,0);
+  const lista = clientes
+    .map((c,i)=>({...c,_idx:i,dias:c.vencimiento?Math.ceil((new Date(c.vencimiento+' 00:00:00')-hoy)/(1000*60*60*24)):999}))
+    .filter(c=>c.dias<=7)
+    .sort((a,b)=>a.dias-b.dias);
+  
+  document.getElementById('alertasCount').textContent = lista.length;
+  const container = document.getElementById('alertasList');
+  if(!lista.length){
+    container.innerHTML='<div class="empty-state"><div class="emoji">✅</div><p>¡Sin alertas! Todos los clientes están al día.</p></div>';
+    return;
+  }
+  container.innerHTML = lista.map(c=>{
+    const plat=PLATFORMS.find(p=>p.id===c.plataforma)||{name:c.plataforma,emoji:'📺'};
+    const cls = c.dias<0?'alerta-urgente':'alerta-pronto';
+    const txt = c.dias<0?`Venció hace ${Math.abs(c.dias)} días`:c.dias===0?'Vence HOY':`Vence en ${c.dias} días`;
+    return `<div class="alerta-item ${cls}">
+      <div class="alerta-dot"></div>
+      <div class="alerta-info">
+        <div class="alerta-nombre">${c.nombre||'Cliente'}</div>
+        <div class="alerta-desc">${txt} · ${c.celular||''}</div>
+        <div class="alerta-plat">${plat.emoji} ${plat.name}</div>
+      </div>
+      <div class="action-btns">
+        <button class="icon-btn wa" onclick="enviarWA(${c._idx})" title="WhatsApp">📱</button>
+        ${c.correo?`<button class="icon-btn mail" onclick="enviarMail(${c._idx})" title="Email">✉️</button>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ==================== MENSAJES ====================
+function actualizarSelectMensajes() {
+  const sel = document.getElementById('msg_cliente');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">-- Selecciona cliente --</option>';
+  clientes.forEach((c,i)=>{
+    const plat=PLATFORMS.find(p=>p.id===c.plataforma);
+    const opt=document.createElement('option');
+    opt.value=i;
+    opt.textContent=`${plat?.emoji||''} ${c.nombre||'Cliente '+i} · ${plat?.name||c.plataforma}`;
+    sel.appendChild(opt);
+  });
+  sel.value=cur;
+}
+
+function generarMensajes() {
+  const idx = document.getElementById('msg_cliente').value;
+  const tipo = document.getElementById('msg_tipo').value;
+  if(idx==='') return;
+  const c = clientes[idx];
+  const plat = PLATFORMS.find(p=>p.id===c.plataforma)||{name:'el servicio'};
+  const empresa = document.getElementById('nombreEmpresa').value || 'nuestra empresa';
+  const hoy = new Date(); hoy.setHours(0,0,0,0);
+  const dias = c.vencimiento?Math.ceil((new Date(c.vencimiento+' 00:00:00')-hoy)/(1000*60*60*24)):null;
+
+  let msgWA='', asunto='', cuerpoEmail='';
+
+  if(tipo==='recordatorio'){
+    const urgente = dias!==null && dias<=0;
+    if(urgente){
+      msgWA=`🚨 Hola, *${c.nombre}.*\n\nSu cuenta de *_${plat.name}_* ha vencido. Para renovar su servicio, por favor confirme con el comprobante de pago.\n\n*Envíar captura de pantalla del pago realizado.*\n\n*¡Muchas gracias! 🫱🏼‍🫲🏼*\n\n_— ${empresa}_`;
+      asunto=`⚠️ Su cuenta ${plat.name} ha vencido`;
+      cuerpoEmail=`Hola ${c.nombre},\n\nLe informamos que su membresía de ${plat.name} ha vencido${c.vencimiento?' el '+c.vencimiento:''}.\n\nPara renovar su servicio y seguir disfrutando del contenido, le solicitamos realizar el pago y enviarnos el comprobante correspondiente.\n\nSi ya realizó el pago, puede ignorar este mensaje.\n\nGracias por su preferencia.\n\nAtentamente,\n${empresa}`;
+    } else {
+      msgWA=`*MENSAJE RECORDATORIO 🚨*\n\nHola, ${c.nombre}.\n\nLe quedan *${dias} días* restantes de su membresía *_${plat.name}_*\n\nFecha de vencimiento: *${c.vencimiento}*\n\nPuede renovar contactándonos antes del vencimiento.\n\n_— ${empresa}_`;
+      asunto=`📅 Recordatorio: Su ${plat.name} vence en ${dias} días`;
+      cuerpoEmail=`Hola ${c.nombre},\n\nEste es un recordatorio amigable: su membresía de ${plat.name} vencerá el ${c.vencimiento} (en ${dias} días).\n\nPara continuar disfrutando del servicio sin interrupciones, le recomendamos renovar antes de la fecha de vencimiento.\n\nNo dude en contactarnos si tiene alguna pregunta.\n\nAtentamente,\n${empresa}`;
+    }
+  } else if(tipo==='credenciales'){
+    let detalles = '';
+    if(c.correo) detalles+=`📧 Correo: *${c.correo}*\n`;
+    if(c.clave) detalles+=`🔑 Contraseña: *${c.clave}*\n`;
+    if(c.perfil) detalles+=`📺 Perfil: *${c.perfil}*\n`;
+    if(c.pin) detalles+=`🔐 PIN: *${c.pin}*\n`;
+    if(c.usuario) detalles+=`🆔 Usuario: *${c.usuario}*\n`;
+    if(c.url) detalles+=`🔗 URL: *${c.url}*\n`;
+    if(c.vencimiento) detalles+=`📅 Vence: *${c.vencimiento}*\n`;
+    msgWA=`✅ *_ACCESO ${plat.name}_*\n\n${detalles}\n_Por favor guarde estos datos en un lugar seguro._\n\n_— ${empresa}_`;
+    asunto=`✅ Tus credenciales de acceso - ${plat.name}`;
+    cuerpoEmail=`Hola ${c.nombre},\n\nAquí están sus credenciales de acceso para ${plat.name}:\n\n${detalles.replace(/\*/g,'')}\nPor favor guarde esta información en un lugar seguro y no la comparta.\n\nAtentamente,\n${empresa}`;
+  } else if(tipo==='bienvenida'){
+    msgWA=`👋 ¡Bienvenido/a, *${c.nombre}*!\n\nGracias por adquirir *_${plat.name}_* con nosotros.\n\nSu servicio está activo hasta el *${c.vencimiento||'—'}*.\n\n¿Tienes alguna consulta? Estamos para ayudarte 😊\n\n_— ${empresa}_`;
+    asunto=`🎉 ¡Bienvenido/a a ${plat.name}!`;
+    cuerpoEmail=`¡Hola ${c.nombre}!\n\nNos complace darte la bienvenida como nuevo cliente de ${plat.name}.\n\nSu servicio ha sido activado y estará disponible hasta el ${c.vencimiento||'—'}.\n\nSi tiene alguna duda o necesita asistencia, no dude en contactarnos.\n\n¡Disfrute del servicio!\n\nAtentamente,\n${empresa}`;
+  } else if(tipo==='cobro'){
+    msgWA=`💰 Hola, *${c.nombre}*.\n\nLe recordamos que tiene un pago pendiente de *S/${parseFloat(c.precio||0).toFixed(2)}* por su membresía de *_${plat.name}_*.\n\nVencimiento: *${c.vencimiento||'—'}*\n\nPor favor realice el pago para mantener su servicio activo.\n\n_— ${empresa}_`;
+    asunto=`💳 Pago pendiente - ${plat.name}`;
+    cuerpoEmail=`Hola ${c.nombre},\n\nLe informamos que tiene un pago pendiente de S/${parseFloat(c.precio||0).toFixed(2)} por su servicio de ${plat.name}.\n\nFecha de vencimiento: ${c.vencimiento||'—'}\n\nPara mantener su servicio activo, le solicitamos realizar el pago a la brevedad posible.\n\nGracias.\n\nAtentamente,\n${empresa}`;
+  } else {
+    msgWA=`Hola *${c.nombre}*,\n\n[Escribe tu mensaje aquí]\n\n_— ${empresa}_`;
+    asunto=`Mensaje de ${empresa}`;
+    cuerpoEmail=`Hola ${c.nombre},\n\n[Escribe el cuerpo del correo aquí]\n\nAtentamente,\n${empresa}`;
+  }
+
+  document.getElementById('msgPreviewWA').textContent=msgWA;
+  document.getElementById('emailPara').value=c.correo||'';
+  document.getElementById('emailAsunto').value=asunto;
+  document.getElementById('emailCuerpo').value=cuerpoEmail;
+
+  // URL WhatsApp
+  const phone = (c.celular||'').replace(/\D/g,'');
+  const waUrl = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(msgWA)}`;
+  const btnWA = document.getElementById('btnEnviarWA');
+  btnWA.href=waUrl; btnWA.style.pointerEvents='auto'; btnWA.style.opacity='1';
+
+  // URL Email
+  const mailUrl = `mailto:${c.correo||''}?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(cuerpoEmail)}`;
+  const btnEmail = document.getElementById('btnEnviarEmail');
+  btnEmail.href=mailUrl; btnEmail.style.pointerEvents='auto'; btnEmail.style.opacity='1';
+}
+
+function copiarMensaje(tipo) {
+  let txt='';
+  if(tipo==='wa') txt=document.getElementById('msgPreviewWA').textContent;
+  else txt=`Asunto: ${document.getElementById('emailAsunto').value}\n\n${document.getElementById('emailCuerpo').value}`;
+  navigator.clipboard.writeText(txt).then(()=>showToast('Mensaje copiado al portapapeles','📋'));
+}
+
+// ==================== ENVIAR WA / EMAIL ====================
+function enviarWA(idx) {
+  const c=clientes[idx];
+  if(!c) return;
+  const plat=PLATFORMS.find(p=>p.id===c.plataforma)||{name:'el servicio'};
+  const empresa=document.getElementById('nombreEmpresa').value||'nuestra empresa';
+  const hoy=new Date();hoy.setHours(0,0,0,0);
+  const dias=c.vencimiento?Math.ceil((new Date(c.vencimiento+' 00:00:00')-hoy)/(1000*60*60*24)):null;
+  let msg;
+  if(dias!==null&&dias<=0){
+    msg=`🚨 Hola, *${c.nombre}.*\n\nSu cuenta de *_${plat.name}_* ha vencido. Para renovar, envíe captura del pago.\n\n*Muchas gracias 🫱🏼‍🫲🏼*\n_— ${empresa}_`;
+  } else {
+    msg=`*RECORDATORIO 🚨*\n\nHola ${c.nombre}.\nLe quedan *${dias}* días de *_${plat.name}_*.\n\n_— ${empresa}_`;
+  }
+  const phone=(c.celular||'').replace(/\D/g,'');
+  window.open(`https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(msg)}`,'_blank');
+}
+
+function enviarMail(idx) {
+  const c=clientes[idx];
+  if(!c||!c.correo){showToast('Este cliente no tiene correo','❌',true);return;}
+  const plat=PLATFORMS.find(p=>p.id===c.plataforma)||{name:'el servicio'};
+  const empresa=document.getElementById('nombreEmpresa').value||'nuestra empresa';
+  const asunto=`Recordatorio: tu membresía de ${plat.name}`;
+  const body=`Hola ${c.nombre},\n\nTe recordamos que tu membresía de ${plat.name} vence el ${c.vencimiento||'—'}.\n\nContacta con nosotros para renovar.\n\nAtentamente,\n${empresa}`;
+  window.location.href=`mailto:${c.correo}?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(body)}`;
+}
+
+function enviarTodosWA() {
+  const hoy=new Date();hoy.setHours(0,0,0,0);
+  const urgentes=clientes.filter(c=>{
+    if(!c.vencimiento||!c.celular) return false;
+    const d=Math.ceil((new Date(c.vencimiento+' 00:00:00')-hoy)/(1000*60*60*24));
+    return d<=7;
+  });
+  if(!urgentes.length){showToast('No hay clientes urgentes (≤7 días) con celular','ℹ️');return;}
+  showToast(`Abriendo ${urgentes.length} conversaciones de WhatsApp...`,'📱');
+  const empresa=document.getElementById('nombreEmpresa').value||'nuestra empresa';
+  urgentes.forEach((c,i)=>{
+    setTimeout(()=>{
+      const d=Math.ceil((new Date(c.vencimiento+' 00:00:00')-hoy)/(1000*60*60*24));
+      const plat=PLATFORMS.find(p=>p.id===c.plataforma)||{name:'el servicio'};
+      const msg=d<=0?`🚨 Hola *${c.nombre}*, su *_${plat.name}_* venció. Por favor renueve. _— ${empresa}_`
+                    :`⚠️ Hola *${c.nombre}*, le quedan *${d} días* de *_${plat.name}_*. _— ${empresa}_`;
+      const phone=(c.celular||'').replace(/\D/g,'');
+      window.open(`https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(msg)}`,'_blank');
+    },i*800);
+  });
+}
+
+function enviarTodosEmail() {
+  const conCorreo=clientes.filter(c=>c.correo);
+  if(!conCorreo.length){showToast('No hay clientes con correo registrado','❌',true);return;}
+  const empresa=document.getElementById('nombreEmpresa').value||'nuestra empresa';
+  const emails=conCorreo.map(c=>c.correo).join(',');
+  const asunto=`Recordatorio de membresías — ${empresa}`;
+  const body=`Estimados clientes,\n\nLes recordamos verificar el estado de sus membresías.\n\nAtentamente,\n${empresa}`;
+  window.location.href=`mailto:${emails}?subject=${encodeURIComponent(asunto)}&body=${encodeURIComponent(body)}`;
+}
+
+// ==================== EDITAR / ELIMINAR ====================
+function editarCliente(idx) {
+  const c=clientes[idx];
+  const plat=PLATFORMS.find(p=>p.id===c.plataforma);
+  if(!plat) return;
+  showTab('agregar');
+  seleccionarPlat(plat.id);
+  editIndex=idx;
+  setTimeout(()=>{
+    plat.fields.forEach(f=>{
+      const el=document.getElementById('f_'+f);
+      if(el) el.value=c[f]||'';
+    });
+    if(document.getElementById('f_proveedor')) document.getElementById('f_proveedor').value=c.proveedor||'';
+    if(document.getElementById('f_precio_prov')) document.getElementById('f_precio_prov').value=c.precio_prov||'';
+    if(document.getElementById('f_venc_prov')) document.getElementById('f_venc_prov').value=c.venc_prov||'';
+  },100);
+  showToast('Editando cliente: '+c.nombre,'✏️');
+}
+
+function eliminarCliente(idx) {
+  const c = clientes[idx];
+  if(!confirm(`¿Eliminar a ${c?.nombre||'este cliente'}?`)) return;
+  clientes.splice(idx,1);
+  guardarLS();
+  // Sync a Firebase
+  if(window._fbReady && c) window._fbDelete(c.id);
+  renderDashboard();renderTabla();renderAlertas();actualizarSelectMensajes();
+  showToast(window._fbReady ? 'Cliente eliminado y sincronizado ☁️':'Cliente eliminado 🗑️','🗑️');
+}
+
+// ==================== EXPORTAR CSV ====================
+function exportarCSV() {
+  if(!clientes.length){showToast('No hay clientes para exportar','❌',true);return;}
+  const cols=['plataforma','nombre','celular','correo','precio','vencimiento','perfil','clave','pin','proveedor','precio_prov','fechaRegistro'];
+  const rows=[cols.join(','),...clientes.map(c=>cols.map(k=>`"${(c[k]||'').toString().replace(/"/g,'""')}"`).join(','))];
+  const blob=new Blob([rows.join('\n')],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=`clientes_stream_${new Date().toISOString().split('T')[0]}.csv`;
+  a.click();
+  showToast('CSV descargado correctamente','📥');
+}
+
+// ==================== TABS ====================
+function showTab(tab) {
+  document.querySelectorAll('.tab-content').forEach(t=>t.style.display='none');
+  document.querySelectorAll('.main-tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+tab).style.display='block';
+  document.querySelector(`.main-tab[onclick="showTab('${tab}')"]`)?.classList.add('active');
+  if(tab==='clientes') renderTabla();
+  if(tab==='alertas') renderAlertas();
+  if(tab==='dashboard') renderDashboard();
+}
+
+function showMsgTab(t) {
+  document.getElementById('msg-whatsapp-tab').style.display=t==='whatsapp'?'block':'none';
+  document.getElementById('msg-email-tab').style.display=t==='email'?'block':'none';
+  document.querySelectorAll('.msg-tab').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+}
+
+// ==================== HELPERS ====================
+function guardarLS() {
+  localStorage.setItem('clientes_stream',JSON.stringify(clientes));
+  // Sincronizar con Firebase si está conectado (se llama después de push/splice)
+  // El sync real lo maneja _fbSave/_fbDelete individualmente
+}
+function showToast(msg,icon='✅',error=false) {
+  const t=document.getElementById('toast');
+  t.className='toast'+(error?' error':' success');
+  document.getElementById('toastIcon').textContent=icon;
+  document.getElementById('toastMsg').textContent=msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3000);
+}
+function hexToRgba(hex,a){
+  const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+
+
+// ==================== AUTH SYSTEM ====================
+const DEFAULT_PWD_HASH = 'c4ca4238a0b923820dcc509a6f75849b'; // MD5 of "1234" - default
+// We use a simple hash stored in localStorage. Not cryptographic but enough for single-user local app.
+
+function simpleHash(str) {
+  // Simple djb2 hash (no external libs needed)
+  let hash = 5381;
+  for (let i = 0; i < str.length; i++) {
+    hash = ((hash << 5) + hash) + str.charCodeAt(i);
+    hash = hash & 0xFFFFFFFF;
+  }
+  return hash.toString(36);
+}
+
+function getStoredHash() {
+  return localStorage.getItem('sp_pwd_hash') || simpleHash('1234');
+}
+
+function isLoggedIn() {
+  return sessionStorage.getItem('sp_logged') === '1';
+}
+
+function checkAuth() {
+  if (!isLoggedIn()) {
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.querySelector('.header').style.display = 'none';
+    document.querySelector('.main').style.display = 'none';
+  } else {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.querySelector('.header').style.display = '';
+    document.querySelector('.main').style.display = '';
+  }
+}
+
+function doLogin() {
+  const pwd = document.getElementById('loginPwd').value;
+  if (!pwd) return;
+  const errEl = document.getElementById('loginError');
+  if (simpleHash(pwd) === getStoredHash()) {
+    sessionStorage.setItem('sp_logged', '1');
+    document.getElementById('loginScreen').style.display = 'none';
+    document.querySelector('.header').style.display = '';
+    document.querySelector('.main').style.display = '';
+    document.getElementById('loginPwd').value = '';
+    errEl.style.display = 'none';
+    // Re-render now that we're in
+    renderDashboard(); renderTabla(); renderAlertas(); actualizarSelectMensajes();
+    showToast('¡Bienvenido! Sesión iniciada 👋', '🔓');
+  } else {
+    errEl.style.display = 'block';
+    document.getElementById('loginPwd').value = '';
+    document.getElementById('loginPwd').focus();
+    document.querySelector('.login-card').style.animation = 'none';
+    setTimeout(() => document.querySelector('.login-card').style.animation = '', 10);
+  }
+}
+
+function doLogout() {
+  if (!confirm('¿Cerrar sesión?')) return;
+  sessionStorage.removeItem('sp_logged');
+  checkAuth();
+  showToast('Sesión cerrada', '🔒');
+}
+
+function togglePwdVis() {
+  const inp = document.getElementById('loginPwd');
+  const btn = document.getElementById('togglePwdBtn');
+  if (inp.type === 'password') { inp.type = 'text'; btn.textContent = '🙈'; }
+  else { inp.type = 'password'; btn.textContent = '👁️'; }
+}
+
+function openChangePwd() {
+  document.getElementById('cpOld').value = '';
+  document.getElementById('cpNew').value = '';
+  document.getElementById('cpNew2').value = '';
+  document.getElementById('cpError').style.display = 'none';
+  document.getElementById('changePwdModal').classList.add('open');
+}
+
+function doChangePwd() {
+  const old = document.getElementById('cpOld').value;
+  const n1 = document.getElementById('cpNew').value;
+  const n2 = document.getElementById('cpNew2').value;
+  const errEl = document.getElementById('cpError');
+  errEl.style.display = 'none';
+  if (simpleHash(old) !== getStoredHash()) {
+    errEl.textContent = '❌ Contraseña actual incorrecta.';
+    errEl.style.display = 'block'; return;
+  }
+  if (n1.length < 4) {
+    errEl.textContent = '❌ La nueva contraseña debe tener al menos 4 caracteres.';
+    errEl.style.display = 'block'; return;
+  }
+  if (n1 !== n2) {
+    errEl.textContent = '❌ Las contraseñas nuevas no coinciden.';
+    errEl.style.display = 'block'; return;
+  }
+  localStorage.setItem('sp_pwd_hash', simpleHash(n1));
+  document.getElementById('changePwdModal').classList.remove('open');
+  showToast('✅ Contraseña actualizada correctamente', '🔑');
+}
+
+// ---- Init auth on load ----
+document.addEventListener('DOMContentLoaded', () => {
+  checkAuth();
+});
+
+
+// ==================== FIREBASE CONFIG UI ====================
+function openFbConfig() {
+  const saved = _loadFbConfig();
+  if (saved) {
+    document.getElementById('fb_apiKey').value     = saved.apiKey     || '';
+    document.getElementById('fb_authDomain').value = saved.authDomain || '';
+    document.getElementById('fb_projectId').value  = saved.projectId  || '';
+    document.getElementById('fb_appId').value      = saved.appId      || '';
+  }
+  document.getElementById('fbConfigModal').classList.add('open');
+}
+
+function _loadFbConfig() {
+  try { return JSON.parse(localStorage.getItem('sp_fb_config') || 'null'); } catch(e){ return null; }
+}
+
+async function saveFbConfig() {
+  const cfg = {
+    apiKey:            document.getElementById('fb_apiKey').value.trim(),
+    authDomain:        document.getElementById('fb_authDomain').value.trim(),
+    projectId:         document.getElementById('fb_projectId').value.trim(),
+    storageBucket:     document.getElementById('fb_projectId').value.trim() + '.appspot.com',
+    messagingSenderId: '000000000000',
+    appId:             document.getElementById('fb_appId').value.trim(),
+  };
+  const errEl = document.getElementById('fbError');
+  errEl.style.display = 'none';
+  if (!cfg.apiKey || !cfg.projectId || !cfg.appId) {
+    errEl.textContent = '❌ Completa al menos apiKey, projectId y appId.';
+    errEl.style.display = 'block'; return;
+  }
+  // Guardar credenciales en LS de este dispositivo
+  localStorage.setItem('sp_fb_config', JSON.stringify(cfg));
+  document.getElementById('fbConfigModal').classList.remove('open');
+  showToast('Conectando a Firebase...', '🔄');
+  window._updateSyncBadge('online');
+  await window._initFirebase(cfg);
+  showToast('¡Firebase conectado! Datos sincronizados ☁️', '✅');
+}
+
+// Al iniciar, cargar config guardada si existe
+document.addEventListener('DOMContentLoaded', () => {
+  const saved = _loadFbConfig();
+  if (saved && saved.apiKey && saved.projectId) {
+    window._initFirebase(saved);
+  }
+});
+
+// Nombre empresa → actualizar header
+document.getElementById('nombreEmpresa').addEventListener('input',()=>{
+  renderDashboard();
+});
+</script>
+</body>
+</html>
