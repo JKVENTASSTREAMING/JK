@@ -1331,6 +1331,17 @@ function renderFormGrid(plat) {
       <input type="${type}" id="f_${f}"${step} placeholder="${getPlaceholder(f)}">
     </div>`;
   }).join('');
+
+  // Auto-fill: +51 Perú en celular y +30 días en vencimiento
+  const celEl = document.getElementById('f_celular');
+  if(celEl && !celEl.value) celEl.value = '51';
+
+  const vencEl = document.getElementById('f_vencimiento');
+  if(vencEl && !vencEl.value) {
+    const d = new Date();
+    d.setDate(d.getDate() + 30);
+    vencEl.value = d.toISOString().split('T')[0];
+  }
 }
 
 function getPlaceholder(f) {
@@ -1588,7 +1599,22 @@ function generarMensajes() {
     asunto=`🎉 ¡Bienvenido/a a ${plat.name}!`;
     cuerpoEmail=`¡Hola ${c.nombre}!\n\nNos complace darte la bienvenida como nuevo cliente de ${plat.name}.\n\nSu servicio ha sido activado y estará disponible hasta el ${c.vencimiento||'—'}.\n\nSi tiene alguna duda o necesita asistencia, no dude en contactarnos.\n\n¡Disfrute del servicio!\n\nAtentamente,\n${empresa}`;
   } else if(tipo==='cobro'){
-    msgWA=`💰 Hola, *${c.nombre}*.\n\nLe recordamos que tiene un pago pendiente de *S/${parseFloat(c.precio||0).toFixed(2)}* por su membresía de *_${plat.name}_*.\n\nVencimiento: *${c.vencimiento||'—'}*\n\nPor favor realice el pago para mantener su servicio activo.\n\n_— ${empresa}_`;
+    msgWA=`💰 Hola, *${c.nombre}*.
+
+Le recordamos que tiene un pago pendiente de *S/${parseFloat(c.precio||0).toFixed(2)}* por su membresía de *_${plat.name}_*.
+
+Vencimiento: *${c.vencimiento||'—'}*
+
+Puede realizar el pago por:
+📲 *YAPE: 936966538 - Jahiro Gomez*
+
+⚠️ *Al yapear NO agregar descripción*
+
+🎁 *No olvides consultar por nuestras promociones*
+
+Envíenos el comprobante para activar su servicio.
+
+_— ${empresa}_`;
     asunto=`💳 Pago pendiente - ${plat.name}`;
     cuerpoEmail=`Hola ${c.nombre},\n\nLe informamos que tiene un pago pendiente de S/${parseFloat(c.precio||0).toFixed(2)} por su servicio de ${plat.name}.\n\nFecha de vencimiento: ${c.vencimiento||'—'}\n\nPara mantener su servicio activo, le solicitamos realizar el pago a la brevedad posible.\n\nGracias.\n\nAtentamente,\n${empresa}`;
   } else {
